@@ -85,7 +85,7 @@ createAdminUser();
 
 
 app.get("/", (req, res) => {
-  res.send("Backend running succesfully!");
+  res.send("<h1>Backend running succesfully!</h1>");
 });
 
 
