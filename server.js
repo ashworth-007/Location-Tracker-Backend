@@ -84,6 +84,11 @@ const createAdminUser = async () => {
 createAdminUser();
 
 
+app.get("/", (req, res) => {
+  res.send("Backend running succesfully!");
+});
+
+
 app.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
   try {
