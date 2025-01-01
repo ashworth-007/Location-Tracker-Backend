@@ -1,12 +1,12 @@
-// Import required modules
+
 const express = require("express");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
-require("dotenv").config(); // Load environment variables
+require("dotenv").config(); 
 
-// Initialize app and middlewares
+
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -16,18 +16,18 @@ const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// MongoDB connection
+
 mongoose
   .connect(MONGO_URI, { })
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error(err));
 
-// Schemas
+
 const userSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true },
   password: String,
-  role: { type: String, default: "user" }, // 'user' or 'admin'
+  role: { type: String, default: "user" }, 
 });
 
 const locationSchema = new mongoose.Schema({
@@ -37,11 +37,11 @@ const locationSchema = new mongoose.Schema({
   timestamp: { type: Date, default: Date.now },
 });
 
-// Models
+
 const User = mongoose.model("User", userSchema);
 const Location = mongoose.model("Location", locationSchema);
 
-// Middleware to verify JWT
+
 const authenticateToken = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) return res.status(401).send("Access Denied");
@@ -52,40 +52,38 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// One-time admin creation (run once to create admin user)
+
 const createAdminUser = async () => {
   const adminEmail = "admin@gmail.com";
   const adminPassword = "123456789";
 
-  // Check if the admin already exists
+ 
   const existingAdmin = await User.findOne({ email: adminEmail });
   if (existingAdmin) {
     console.log("Admin user already exists");
     return;
   }
 
-  // Create a hashed password for the admin
+ 
   const hashedPassword = await bcrypt.hash(adminPassword, 10);
 
-  // Create a new admin user
+ 
   const adminUser = new User({
     name: "Admin",
     email: adminEmail,
     password: hashedPassword,
-    role: "admin", // Setting the role to "admin"
+    role: "admin", 
   });
 
-  // Save the admin user to the database
+  
   await adminUser.save();
   console.log("Admin user created successfully");
 };
 
-// Call the function to create the admin user (run only once)
+
 createAdminUser();
 
-// Routes
 
-// Registration
 app.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
   try {
@@ -173,5 +171,5 @@ app.get("/admin/users/:id/locations", authenticateToken, async (req, res) => {
   }
 });
 
-// Start the server
+
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
